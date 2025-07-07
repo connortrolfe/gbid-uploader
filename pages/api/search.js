@@ -55,12 +55,33 @@ export default async function handler(req, res) {
 
     const queryVector = embeddingResponse.data[0].embedding;
 
-    // Search Pinecone
-    const searchResponse = await index.query({
-      vector: queryVector,
-      topK: 50, // Return top 50 results
-      includeMetadata: true,
-    });
+    // Search Pinecone with retry logic
+    let retries = 3;
+    let lastError;
+    let searchResponse;
+    
+    while (retries > 0) {
+      try {
+        searchResponse = await index.query({
+          vector: queryVector,
+          topK: 50, // Return top 50 results
+          includeMetadata: true,
+        });
+        break; // Success, exit retry loop
+      } catch (error) {
+        lastError = error;
+        retries--;
+        
+        if (retries > 0) {
+          console.log(`Pinecone search failed, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+    }
+    
+    if (retries === 0) {
+      throw lastError;
+    }
 
     // Format results
     const results = searchResponse.matches.map(match => ({
