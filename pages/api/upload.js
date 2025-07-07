@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     const index = pinecone.index(process.env.PINECONE_INDEX);
 
     // Create text for embedding
-    const itemText = `Name: ${name}\nGBID: ${gbid}\n`;
+    let itemText = `Name: ${name}\nGBID: ${gbid}\n`;
     if (properties) {
       itemText += `Properties: ${properties}\n`;
     }
