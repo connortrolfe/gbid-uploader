@@ -1,11 +1,3 @@
-import { Pinecone } from '@pinecone-database/pinecone';
-
-// Initialize Pinecone
-const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY,
-  environment: process.env.PINECONE_ENV || 'us-east-1-aws',
-});
-
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,6 +12,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const pineconeApiKey = process.env.PINECONE_API_KEY;
+  const pineconeHost = process.env.PINECONE_HOST;
+  if (!pineconeApiKey || !pineconeHost) {
+    return res.status(500).json({ error: 'PINECONE_API_KEY or PINECONE_HOST not set' });
+  }
+
   try {
     const { gbid } = req.body;
 
@@ -27,25 +25,30 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'GBID is required' });
     }
 
-    // Check environment variables
-    if (!process.env.PINECONE_API_KEY) {
-      return res.status(500).json({ error: 'Pinecone API key not configured' });
-    }
-    if (!process.env.PINECONE_INDEX) {
-      return res.status(500).json({ error: 'Pinecone index name not configured' });
-    }
+    // Delete from Pinecone via HTTP
+    const deleteUrl = `${pineconeHost}/vectors/delete`;
+    const deleteBody = { ids: [gbid] };
+    const deleteResponse = await fetch(deleteUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Key': pineconeApiKey,
+      },
+      body: JSON.stringify(deleteBody),
+    });
 
-    // Get Pinecone index
-    const index = pinecone.index(process.env.PINECONE_INDEX);
-
-    // Delete from Pinecone
-    await index.deleteOne(gbid);
+    if (!deleteResponse.ok) {
+      const errorText = await deleteResponse.text();
+      return res.status(500).json({
+        error: `Pinecone delete failed: ${deleteResponse.status} - ${deleteResponse.statusText}`,
+        details: errorText,
+      });
+    }
 
     return res.status(200).json({
       success: true,
       message: `Successfully deleted item with GBID: ${gbid}`,
     });
-
   } catch (error) {
     console.error('Delete error:', error);
     return res.status(500).json({
