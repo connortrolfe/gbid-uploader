@@ -12,7 +12,8 @@ export default function Home() {
   const [properties, setProperties] = useState(['']);
   const [isUploading, setIsUploading] = useState(false);
   const [logs, setLogs] = useState([]);
-  const [uploadMode, setUploadMode] = useState('single'); // 'single' or 'batch'
+  const [uploadMode, setUploadMode] = useState('single'); // 'single', 'batch', or 'bulk-size'
+  const [bulkData, setBulkData] = useState('');
 
   const addProperty = () => {
     setProperties([...properties, '']);
@@ -172,6 +173,103 @@ export default function Home() {
     });
   };
 
+  const parseBulkData = (text) => {
+    const lines = text.split('\n').filter(line => line.trim());
+    const items = [];
+    let currentItem = null;
+
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      
+      // Check if this is a new item (starts with a letter and has ":" at the end)
+      if (/^[A-Z].*:$/.test(trimmedLine)) {
+        if (currentItem) {
+          items.push(currentItem);
+        }
+        currentItem = {
+          name: trimmedLine.slice(0, -1).trim(), // Remove the ":"
+          configurations: []
+        };
+      } else if (currentItem && trimmedLine.includes(':')) {
+        // This is a configuration line (size: gbid)
+        const [size, gbid] = trimmedLine.split(':').map(s => s.trim());
+        if (size && gbid) {
+          currentItem.configurations.push({ size, gbid });
+        }
+      }
+    }
+
+    // Add the last item
+    if (currentItem) {
+      items.push(currentItem);
+    }
+
+    return items;
+  };
+
+  const handleBulkSizeUpload = async () => {
+    if (!bulkData.trim()) {
+      addLog('Error: Please enter bulk data');
+      return;
+    }
+
+    setIsUploading(true);
+    addLog('Parsing bulk data...');
+
+    try {
+      const items = parseBulkData(bulkData);
+      addLog(`Found ${items.length} items with multiple configurations`);
+
+      let totalUploads = 0;
+      let successCount = 0;
+
+      for (const item of items) {
+        addLog(`Processing: ${item.name} (${item.configurations.length} configurations)`);
+        
+        for (const config of item.configurations) {
+          totalUploads++;
+          addLog(`Uploading ${totalUploads}: ${item.name} - ${config.size} (${config.gbid})...`);
+
+          try {
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'single',
+                data: {
+                  name: item.name,
+                  gbid: config.gbid,
+                  properties: config.size,
+                  alternateNames: '',
+                  specialNotes: ''
+                }
+              }),
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+              addLog(`Success: ${item.name} - ${config.size} (${config.gbid}) uploaded`);
+              successCount++;
+            } else {
+              addLog(`Error uploading ${item.name} - ${config.size}: ${result.error}`);
+            }
+          } catch (error) {
+            addLog(`Error uploading ${item.name} - ${config.size}: ${error.message}`);
+          }
+        }
+      }
+
+      addLog(`Bulk upload complete: ${successCount}/${totalUploads} items uploaded successfully`);
+    } catch (error) {
+      addLog(`Error processing bulk data: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <Head>
@@ -206,6 +304,16 @@ export default function Home() {
                 }`}
               >
                 Batch Upload (CSV)
+              </button>
+              <button
+                onClick={() => setUploadMode('bulk-size')}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  uploadMode === 'bulk-size'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Bulk Size Upload
               </button>
             </div>
           </div>
@@ -312,7 +420,7 @@ export default function Home() {
                 {isUploading ? 'Uploading...' : 'Upload Item'}
               </button>
             </div>
-          ) : (
+                      ) : uploadMode === 'batch' ? (
             /* Batch Upload */
             <div className="space-y-4">
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
@@ -341,6 +449,51 @@ export default function Home() {
                   </div>
                 </label>
               </div>
+            </div>
+          ) : (
+            /* Bulk Size Upload */
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Paste your bulk data here:
+                </label>
+                <textarea
+                  value={bulkData}
+                  onChange={(e) => setBulkData(e.target.value)}
+                  className="w-full h-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  placeholder={`Example format:
+
+RIGID COUPLINGS:
+1/2": 88272937
+3/4": 88272942
+1": 88272936
+1 1/4": 88272935
+1 1/2": 88272934
+2": 88272939
+
+RIGID CONDUIT:
+1/2": 12345678
+3/4": 12345679
+1": 12345680`}
+                  disabled={isUploading}
+                />
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-blue-900 mb-2">Format Instructions:</h3>
+                <ul className="text-sm text-blue-800 space-y-1">
+                  <li>• Item name should end with ":" (e.g., "RIGID COUPLINGS:")</li>
+                  <li>• Each size/GBID pair on a new line (e.g., "1/2": 88272937")</li>
+                  <li>• Leave a blank line between different items</li>
+                  <li>• The app will create separate uploads for each size configuration</li>
+                </ul>
+              </div>
+              <button
+                onClick={handleBulkSizeUpload}
+                disabled={isUploading || !bulkData.trim()}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {isUploading ? 'Processing...' : 'Upload All Configurations'}
+              </button>
             </div>
           )}
         </div>
