@@ -96,12 +96,33 @@ export default async function handler(req, res) {
       special_notes: specialNotes || '',
     };
 
-    // Upload to Pinecone
-    await index.upsert([{
-      id: gbid,
-      values: vector,
-      metadata: metadata,
-    }]);
+    // Upload to Pinecone with retry logic
+    let retries = 3;
+    let lastError;
+    
+    while (retries > 0) {
+      try {
+        await index.upsert([{
+          id: gbid,
+          values: vector,
+          metadata: metadata,
+        }]);
+        break; // Success, exit retry loop
+      } catch (error) {
+        lastError = error;
+        retries--;
+        
+        if (retries > 0) {
+          console.log(`Pinecone upload failed, retrying... (${retries} attempts left)`);
+          // Wait 1 second before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+    }
+    
+    if (retries === 0) {
+      throw lastError;
+    }
 
     return res.status(200).json({
       success: true,
