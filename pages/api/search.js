@@ -1,16 +1,4 @@
-import { Pinecone } from '@pinecone-database/pinecone';
 import OpenAI from 'openai';
-
-// Initialize Pinecone
-const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY,
-  environment: process.env.PINECONE_ENV || 'us-east-1-aws',
-});
-
-// Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -26,6 +14,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const pineconeApiKey = process.env.PINECONE_API_KEY;
+  const pineconeHost = process.env.PINECONE_HOST;
+  if (!pineconeApiKey || !pineconeHost) {
+    return res.status(500).json({ error: 'PINECONE_API_KEY or PINECONE_HOST not set' });
+  }
+
   try {
     const { query } = req.body;
 
@@ -33,58 +27,47 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Search query is required' });
     }
 
-    // Check environment variables
-    if (!process.env.PINECONE_API_KEY) {
-      return res.status(500).json({ error: 'Pinecone API key not configured' });
-    }
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({ error: 'OpenAI API key not configured' });
     }
-    if (!process.env.PINECONE_INDEX) {
-      return res.status(500).json({ error: 'Pinecone index name not configured' });
-    }
 
-    // Get Pinecone index
-    const index = pinecone.index(process.env.PINECONE_INDEX);
+    // Initialize OpenAI
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     // Generate embedding for the search query
     const embeddingResponse = await openai.embeddings.create({
       model: 'text-embedding-3-large',
       input: query,
     });
-
     const queryVector = embeddingResponse.data[0].embedding;
 
-    // Search Pinecone with retry logic
-    let retries = 3;
-    let lastError;
-    let searchResponse;
-    
-    while (retries > 0) {
-      try {
-        searchResponse = await index.query({
-          vector: queryVector,
-          topK: 50, // Return top 50 results
-          includeMetadata: true,
-        });
-        break; // Success, exit retry loop
-      } catch (error) {
-        lastError = error;
-        retries--;
-        
-        if (retries > 0) {
-          console.log(`Pinecone search failed, retrying... (${retries} attempts left)`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-      }
-    }
-    
-    if (retries === 0) {
-      throw lastError;
+    // Query Pinecone via HTTP
+    const queryUrl = `${pineconeHost}/query`;
+    const queryBody = {
+      vector: queryVector,
+      topK: 50,
+      includeMetadata: true,
+      includeValues: false
+    };
+    const queryResponse = await fetch(queryUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Key': pineconeApiKey,
+      },
+      body: JSON.stringify(queryBody),
+    });
+
+    if (!queryResponse.ok) {
+      const errorText = await queryResponse.text();
+      return res.status(500).json({
+        error: `Pinecone query failed: ${queryResponse.status} - ${queryResponse.statusText}`,
+        details: errorText,
+      });
     }
 
-    // Format results
-    const results = searchResponse.matches.map(match => ({
+    const data = await queryResponse.json();
+    const results = (data.matches || []).map(match => ({
       gbid: match.id,
       name: match.metadata?.name || '',
       properties: match.metadata?.properties || '',
@@ -98,7 +81,6 @@ export default async function handler(req, res) {
       results: results,
       total: results.length
     });
-
   } catch (error) {
     console.error('Search error:', error);
     return res.status(500).json({
