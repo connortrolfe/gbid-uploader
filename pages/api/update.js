@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 // Initialize Pinecone
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
+  environment: process.env.PINECONE_ENV || 'us-east-1-aws',
 });
 
 // Initialize OpenAI
