@@ -3,6 +3,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 // Initialize Pinecone
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
+  environment: process.env.PINECONE_ENV || 'us-east-1-aws',
 });
 
 export default async function handler(req, res) {
