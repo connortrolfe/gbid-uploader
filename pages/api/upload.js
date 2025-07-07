@@ -96,8 +96,18 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Upload error:', error);
+    
+    // Log environment variable status (without exposing values)
+    console.log('Environment check:', {
+      hasPineconeKey: !!process.env.PINECONE_API_KEY,
+      hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+      hasPineconeIndex: !!process.env.PINECONE_INDEX,
+      pineconeIndex: process.env.PINECONE_INDEX
+    });
+    
     return res.status(500).json({
       error: error.message || 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 } 
