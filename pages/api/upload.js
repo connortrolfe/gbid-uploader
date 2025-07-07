@@ -26,6 +26,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Debug environment variables
+  console.log('Environment variables check:', {
+    hasPineconeKey: !!process.env.PINECONE_API_KEY,
+    hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+    hasPineconeIndex: !!process.env.PINECONE_INDEX,
+    hasPineconeEnv: !!process.env.PINECONE_ENV,
+    pineconeEnv: process.env.PINECONE_ENV,
+    pineconeIndex: process.env.PINECONE_INDEX
+  });
+
   try {
     const { type, data } = req.body;
 
@@ -49,6 +59,9 @@ export default async function handler(req, res) {
     }
     if (!process.env.PINECONE_INDEX) {
       return res.status(500).json({ error: 'Pinecone index name not configured' });
+    }
+    if (!process.env.PINECONE_ENV) {
+      return res.status(500).json({ error: 'Pinecone environment not configured' });
     }
 
     // Get Pinecone index
