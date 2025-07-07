@@ -252,14 +252,17 @@ export default function Home() {
               }),
             });
 
-            const result = await response.json();
-            
-            if (response.ok) {
-              addLog(`Success: ${item.name} - ${config.size} (${config.gbid}) uploaded`);
-              successCount++;
-            } else {
-              addLog(`Error uploading ${item.name} - ${config.size}: ${result.error}`);
-            }
+                  const result = await response.json();
+      
+      if (response.ok) {
+        addLog(`Success: ${item.name} - ${config.size} (${config.gbid}) uploaded`);
+        successCount++;
+      } else {
+        addLog(`Error uploading ${item.name} - ${config.size}: ${result.error}`);
+        if (result.details) {
+          addLog(`Details: ${result.details}`);
+        }
+      }
           } catch (error) {
             addLog(`Error uploading ${item.name} - ${config.size}: ${error.message}`);
           }
