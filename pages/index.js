@@ -42,8 +42,8 @@ export default function Home() {
   };
 
   const handleSingleUpload = async () => {
-    if (!formData.name || !formData.gbid) {
-      addLog('Error: Name and GBID are required');
+    if (!formData.name || (!formData.gbid && !formData.gbidTemplate)) {
+      addLog('Error: Name and at least one of GBID or GBID Template are required');
       return;
     }
 
@@ -114,7 +114,7 @@ export default function Home() {
         }
 
         // Validate required columns
-        const requiredCols = ['Name', 'GBID'];
+        const requiredCols = ['Name'];
         const firstRow = data[0];
         const missingCols = requiredCols.filter(col => !(col in firstRow));
         
@@ -131,9 +131,10 @@ export default function Home() {
           const row = data[i];
           const name = row.Name?.trim();
           const gbid = row.GBID?.trim();
+          const gbidTemplate = row['GBID Template']?.trim();
 
-          if (!name || !gbid) {
-            addLog(`Skipping row ${i + 1}: missing Name or GBID`);
+          if (!name || (!gbid && !gbidTemplate)) {
+            addLog(`Skipping row ${i + 1}: missing Name and both GBID and GBID Template`);
             continue;
           }
 
@@ -150,7 +151,7 @@ export default function Home() {
                 data: {
                   name,
                   gbid,
-                  gbidTemplate: row['GBID Template']?.trim() || '',
+                  gbidTemplate: gbidTemplate || '',
                   properties: row.Properties?.trim() || '',
                   alternateNames: row['Alternate Names']?.trim() || '',
                   specialNotes: row['Special Notes']?.trim() || ''
