@@ -499,11 +499,11 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Name *
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                     placeholder="e.g., RIGID COUPLINGS"
                   />
                 </div>
@@ -511,11 +511,11 @@ export default function Home() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     GBID *
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={formData.gbid}
                     onChange={(e) => setFormData({...formData, gbid: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                     placeholder="e.g., 88254013"
                   />
                 </div>
@@ -525,11 +525,11 @@ export default function Home() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   GBID Template
                 </label>
-                <input
-                  type="text"
+                <textarea
                   value={formData.gbidTemplate}
                   onChange={(e) => setFormData({...formData, gbidTemplate: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                   placeholder="e.g., =ASE(SIZE)X(SIZE)X(SIZE)*"
                 />
               </div>
@@ -538,11 +538,11 @@ export default function Home() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Alternate Names
                 </label>
-                <input
-                  type="text"
+                <textarea
                   value={formData.alternateNames}
                   onChange={(e) => setFormData({...formData, alternateNames: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                   placeholder="e.g., GALV COUPLINGS, GALVANIZED COUPLINGS"
                 />
               </div>
@@ -551,11 +551,11 @@ export default function Home() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Special Notes
                 </label>
-                <input
-                  type="text"
+                <textarea
                   value={formData.specialNotes}
                   onChange={(e) => setFormData({...formData, specialNotes: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
                   placeholder="e.g., Standard"
                 />
               </div>
@@ -738,10 +738,10 @@ RIGID CONDUIT:
                           <tr key={getRowId(item)} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                               {editingRowId === getRowId(item) ? (
-                                <input
-                                  type="text"
+                                <textarea
                                   value={editFormData.name}
-                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded resize-y"
+                                  rows={2}
                                   onChange={e => setEditFormData({ ...editFormData, name: e.target.value })}
                                 />
                               ) : (
@@ -750,10 +750,10 @@ RIGID CONDUIT:
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {editingRowId === getRowId(item) ? (
-                                <input
-                                  type="text"
+                                <textarea
                                   value={editFormData.gbid}
-                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded resize-y"
+                                  rows={2}
                                   onChange={e => setEditFormData({ ...editFormData, gbid: e.target.value })}
                                 />
                               ) : (
@@ -762,10 +762,10 @@ RIGID CONDUIT:
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {editingRowId === getRowId(item) ? (
-                                <input
-                                  type="text"
+                                <textarea
                                   value={editFormData.gbidTemplate}
-                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded resize-y"
+                                  rows={2}
                                   onChange={e => setEditFormData({ ...editFormData, gbidTemplate: e.target.value })}
                                 />
                               ) : (
@@ -774,10 +774,10 @@ RIGID CONDUIT:
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {editingRowId === getRowId(item) ? (
-                                <input
-                                  type="text"
+                                <textarea
                                   value={editFormData.properties}
-                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded resize-y"
+                                  rows={2}
                                   onChange={e => setEditFormData({ ...editFormData, properties: e.target.value })}
                                 />
                               ) : (
@@ -786,10 +786,10 @@ RIGID CONDUIT:
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {editingRowId === getRowId(item) ? (
-                                <input
-                                  type="text"
+                                <textarea
                                   value={editFormData.alternate_names}
-                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded resize-y"
+                                  rows={2}
                                   onChange={e => setEditFormData({ ...editFormData, alternate_names: e.target.value })}
                                 />
                               ) : (
@@ -798,10 +798,10 @@ RIGID CONDUIT:
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {editingRowId === getRowId(item) ? (
-                                <input
-                                  type="text"
+                                <textarea
                                   value={editFormData.special_notes}
-                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  className="w-full px-2 py-1 border border-gray-300 rounded resize-y"
+                                  rows={3}
                                   onChange={e => setEditFormData({ ...editFormData, special_notes: e.target.value })}
                                 />
                               ) : (
