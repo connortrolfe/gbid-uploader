@@ -28,12 +28,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid upload type' });
     }
 
-    const { name, gbid, properties, alternateNames, specialNotes } = data;
+    const { name, gbid, gbidTemplate, properties, alternateNames, specialNotes } = data;
 
     // Validate required fields
-    if (!name || !gbid) {
-      return res.status(400).json({ error: 'Name and GBID are required' });
+    if (!name || (!gbid?.trim() && !gbidTemplate?.trim())) {
+      return res.status(400).json({ error: 'Name and at least one of GBID or GBID Template are required' });
     }
+
+    const id = gbid?.trim() || gbidTemplate?.trim();
 
     // Check environment variables
     if (!process.env.OPENAI_API_KEY) {
@@ -66,7 +68,8 @@ export default async function handler(req, res) {
     // Prepare metadata
     const metadata = {
       name: name,
-      gbid: gbid,
+      gbid: gbid || '',
+      gbidTemplate: gbidTemplate || '',
       properties: properties || '',
       alternate_names: alternateNames || '',
       special_notes: specialNotes || '',
@@ -77,7 +80,7 @@ export default async function handler(req, res) {
     const upsertBody = {
       vectors: [
         {
-          id: gbid,
+          id: id,
           values: vector,
           metadata: metadata,
         },
@@ -102,7 +105,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Successfully uploaded ${name} (${gbid})`,
+      message: `Successfully uploaded ${name} (${id})`,
     });
 
   } catch (error) {
