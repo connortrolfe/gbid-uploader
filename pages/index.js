@@ -752,7 +752,10 @@ RIGID CONDUIT:
               {searchResults.length > 0 && (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table
+                      className="min-w-full divide-y divide-gray-200"
+                      style={{ tableLayout: 'fixed', width: '100%' }}
+                    >
                       <thead className="bg-gray-50">
                         <tr>
                           <th
@@ -762,9 +765,12 @@ RIGID CONDUIT:
                             Name
                             <div
                               style={{
-                                position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all',
+                                position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all', transition: 'background 0.2s',
+                                background: 'transparent',
                               }}
                               onMouseDown={e => handleMouseDown(e, 0)}
+                              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
                           <th
@@ -773,8 +779,12 @@ RIGID CONDUIT:
                           >
                             GBID
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all', transition: 'background 0.2s',
+                                background: 'transparent',
+                              }}
                               onMouseDown={e => handleMouseDown(e, 1)}
+                              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
                           <th
@@ -783,8 +793,12 @@ RIGID CONDUIT:
                           >
                             GBID Template
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all', transition: 'background 0.2s',
+                                background: 'transparent',
+                              }}
                               onMouseDown={e => handleMouseDown(e, 2)}
+                              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
                           <th
@@ -793,8 +807,12 @@ RIGID CONDUIT:
                           >
                             Properties
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all', transition: 'background 0.2s',
+                                background: 'transparent',
+                              }}
                               onMouseDown={e => handleMouseDown(e, 3)}
+                              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
                           <th
@@ -803,8 +821,12 @@ RIGID CONDUIT:
                           >
                             Alternate Names
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all', transition: 'background 0.2s',
+                                background: 'transparent',
+                              }}
                               onMouseDown={e => handleMouseDown(e, 4)}
+                              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
                           <th
@@ -813,8 +835,12 @@ RIGID CONDUIT:
                           >
                             Special Notes
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all', transition: 'background 0.2s',
+                                background: 'transparent',
+                              }}
                               onMouseDown={e => handleMouseDown(e, 5)}
+                              onMouseEnter={e => e.currentTarget.style.background = '#e5e7eb'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10">Actions</th>
