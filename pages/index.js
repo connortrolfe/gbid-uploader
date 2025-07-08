@@ -413,7 +413,9 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gbid: item.gbid
+          gbid: item.gbid,
+          gbidTemplate: item.gbidTemplate,
+          name: item.name,
         }),
       });
 
