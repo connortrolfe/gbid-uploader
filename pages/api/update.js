@@ -20,6 +20,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Sanitize Pinecone vector ID
+    function sanitizeId(id) {
+      // Only allow a-z, A-Z, 0-9, -, _ and max 256 chars
+      return (id || '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 256);
+    }
+
     const { originalGbid, data } = req.body;
     if (!originalGbid || !data) {
       return res.status(400).json({ error: 'Original GBID and data are required' });
@@ -28,7 +34,8 @@ export default async function handler(req, res) {
     if (!name || (!gbid?.trim() && !gbidTemplate?.trim())) {
       return res.status(400).json({ error: 'Name and at least one of GBID or GBID Template are required' });
     }
-    const id = gbid?.trim() || gbidTemplate?.trim();
+    // Always use sanitized originalGbid as the vector ID
+    const safeId = sanitizeId(originalGbid);
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({ error: 'OpenAI API key not configured' });
     }
@@ -60,12 +67,12 @@ export default async function handler(req, res) {
     };
 
     // Debug logging before upsert
-    console.log('Update request:', { originalGbid, name, gbid, gbidTemplate });
-    console.log('Upsert vector ID:', originalGbid);
+    console.log('Update request:', { originalGbid, safeId, name, gbid, gbidTemplate });
+    console.log('Upsert vector ID:', safeId);
     const upsertBody = {
       vectors: [
         {
-          id: originalGbid,
+          id: safeId,
           values: vector,
           metadata: metadata,
         },
@@ -95,8 +102,8 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Successfully updated ${name} (${originalGbid})`,
-      id: originalGbid,
+      message: `Successfully updated ${name} (${safeId})`,
+      id: safeId,
     });
   } catch (error) {
     console.error('Update error:', error);
