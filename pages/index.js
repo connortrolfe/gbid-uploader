@@ -760,7 +760,7 @@ RIGID CONDUIT:
                         <tr>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800 }}
+                            style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
                             Name
                             <div
@@ -775,7 +775,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[1], minWidth: 60, maxWidth: 800 }}
+                            style={{ width: columnWidths[1], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
                             GBID
                             <div
@@ -789,7 +789,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[2], minWidth: 60, maxWidth: 800 }}
+                            style={{ width: columnWidths[2], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
                             GBID Template
                             <div
@@ -803,7 +803,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[3], minWidth: 60, maxWidth: 800 }}
+                            style={{ width: columnWidths[3], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
                             Properties
                             <div
@@ -817,7 +817,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[4], minWidth: 60, maxWidth: 800 }}
+                            style={{ width: columnWidths[4], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
                             Alternate Names
                             <div
@@ -831,7 +831,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[5], minWidth: 60, maxWidth: 800 }}
+                            style={{ width: columnWidths[5], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
                             Special Notes
                             <div
@@ -849,7 +849,7 @@ RIGID CONDUIT:
                       <tbody className="bg-white divide-y divide-gray-200">
                         {searchResults.map((item, index) => (
                           <tr key={getRowId(item)} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.name}
@@ -861,7 +861,7 @@ RIGID CONDUIT:
                                 item.name
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[1], minWidth: 60, maxWidth: 800 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[1], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.gbid}
@@ -873,7 +873,7 @@ RIGID CONDUIT:
                                 item.gbid
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[2], minWidth: 60, maxWidth: 800 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[2], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.gbidTemplate}
@@ -885,7 +885,7 @@ RIGID CONDUIT:
                                 item.gbidTemplate
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[3], minWidth: 60, maxWidth: 800 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[3], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.properties}
@@ -897,7 +897,7 @@ RIGID CONDUIT:
                                 item.properties
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[4], minWidth: 60, maxWidth: 800 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[4], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.alternate_names}
@@ -909,7 +909,7 @@ RIGID CONDUIT:
                                 item.alternate_names
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[5], minWidth: 60, maxWidth: 800 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[5], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.special_notes}
