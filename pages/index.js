@@ -322,8 +322,8 @@ export default function Home() {
   };
 
   const handleEditItem = async (item, updatedData) => {
+    console.log('Updating item with data:', updatedData); // Debug log
     addLog(`Updating: ${item.name} (${item.gbid})...`);
-
     try {
       const response = await fetch('/api/update', {
         method: 'POST',
@@ -332,12 +332,10 @@ export default function Home() {
         },
         body: JSON.stringify({
           originalGbid: item.gbid,
-          data: updatedData
+          data: updatedData // should include gbidTemplate
         }),
       });
-
       const result = await response.json();
-      
       if (response.ok) {
         addLog(`Success: ${updatedData.name} (${updatedData.gbid}) updated`);
         setEditingItem(null);
@@ -751,7 +749,7 @@ RIGID CONDUIT:
                               {editingItem?.gbid === item.gbid ? (
                                 <input
                                   type="text"
-                                  defaultValue={item.gbidTemplate}
+                                  defaultValue={editingItem.gbidTemplate ?? item.gbidTemplate}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
                                   onBlur={(e) => {
                                     const updatedData = { ...editingItem, gbidTemplate: e.target.value };
