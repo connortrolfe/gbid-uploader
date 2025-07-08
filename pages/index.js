@@ -322,13 +322,17 @@ export default function Home() {
     }
   };
 
+  const getRowId = (item) => item.gbid || item.gbidTemplate || item.name;
+
   const handleEditItem = async (item, updatedData) => {
     const backendData = {
       ...updatedData,
       alternateNames: updatedData.alternate_names,
       specialNotes: updatedData.special_notes,
     };
-    addLog(`Updating: ${item.name} (${item.gbid})...`);
+    const originalGbid = updatedData.originalGbid || updatedData.originalId;
+    console.log('Updating item with data:', backendData);
+    addLog(`Updating: ${backendData.name} (${backendData.gbid})...`);
     try {
       const response = await fetch('/api/update', {
         method: 'POST',
@@ -336,7 +340,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          originalGbid: item.gbid,
+          originalGbid,
           data: backendData
         }),
       });
@@ -350,10 +354,12 @@ export default function Home() {
           handleSearch();
         }
       } else {
-        addLog(`Error updating ${item.name}: ${result.error}`);
+        addLog(`Error updating ${backendData.name}: ${result.error}`);
+        alert(`Error updating: ${result.error}`);
       }
     } catch (error) {
-      addLog(`Error updating ${item.name}: ${error.message}`);
+      addLog(`Error updating ${backendData.name}: ${error.message}`);
+      alert(`Error updating: ${error.message}`);
     }
   };
 
@@ -720,9 +726,9 @@ RIGID CONDUIT:
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {searchResults.map((item, index) => (
-                          <tr key={item.gbid || item.gbidTemplate || item.name} className="hover:bg-gray-50">
+                          <tr key={getRowId(item)} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <input
                                   type="text"
                                   value={editFormData.name}
@@ -734,7 +740,7 @@ RIGID CONDUIT:
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <input
                                   type="text"
                                   value={editFormData.gbid}
@@ -746,7 +752,7 @@ RIGID CONDUIT:
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <input
                                   type="text"
                                   value={editFormData.gbidTemplate}
@@ -758,7 +764,7 @@ RIGID CONDUIT:
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <input
                                   type="text"
                                   value={editFormData.properties}
@@ -770,7 +776,7 @@ RIGID CONDUIT:
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <input
                                   type="text"
                                   value={editFormData.alternate_names}
@@ -782,7 +788,7 @@ RIGID CONDUIT:
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <input
                                   type="text"
                                   value={editFormData.special_notes}
@@ -794,7 +800,7 @@ RIGID CONDUIT:
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white z-10">
-                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
+                              {editingRowId === getRowId(item) ? (
                                 <div className="flex space-x-2">
                                   <button
                                     onClick={() => handleEditItem(item, editFormData)}
@@ -813,7 +819,7 @@ RIGID CONDUIT:
                                 <div className="flex space-x-2">
                                   <button
                                     onClick={() => {
-                                      setEditingRowId(item.gbid || item.gbidTemplate);
+                                      setEditingRowId(getRowId(item));
                                       setEditFormData({
                                         name: item.name || '',
                                         gbid: item.gbid || '',
@@ -821,6 +827,8 @@ RIGID CONDUIT:
                                         properties: item.properties || '',
                                         alternate_names: item.alternate_names || '',
                                         special_notes: item.special_notes || '',
+                                        originalGbid: item.gbid || '',
+                                        originalId: getRowId(item),
                                       });
                                     }}
                                     className="text-blue-600 hover:text-blue-900"
