@@ -35,7 +35,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Name and at least one of GBID or GBID Template are required' });
     }
 
-    const id = gbid?.trim() || gbidTemplate?.trim();
+    // Generate a unique id if gbid is not present
+    function makeUniqueId(name) {
+      return (
+        (name?.replace(/\s+/g, '_').toLowerCase() || 'item') + '-' + Date.now()
+      );
+    }
+
+    const id = gbid?.trim() || makeUniqueId(name);
 
     // Check environment variables
     if (!process.env.OPENAI_API_KEY) {
