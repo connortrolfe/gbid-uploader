@@ -42,7 +42,8 @@ export default function Home() {
   };
 
   const handleSingleUpload = async () => {
-    if (!formData.name || (!formData.gbid && !formData.gbidTemplate)) {
+    console.log('formData:', formData); // Debug log
+    if (!formData.name || (!formData.gbid.trim() && !formData.gbidTemplate.trim())) {
       addLog('Error: Name and at least one of GBID or GBID Template are required');
       return;
     }
