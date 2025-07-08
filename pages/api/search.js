@@ -68,7 +68,8 @@ export default async function handler(req, res) {
 
     const data = await queryResponse.json();
     const results = (data.matches || []).map(match => ({
-      gbid: match.id,
+      gbid: match.metadata?.gbid || '',
+      gbidTemplate: match.metadata?.gbidTemplate || '',
       name: match.metadata?.name || '',
       properties: match.metadata?.properties || '',
       alternate_names: match.metadata?.alternate_names || '',
