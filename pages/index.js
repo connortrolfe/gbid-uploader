@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Papa from 'papaparse';
 
@@ -20,7 +20,7 @@ export default function Home() {
   const [isSearching, setIsSearching] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null);
   const [editFormData, setEditFormData] = useState({});
-  const defaultColumnWidths = [180, 120, 160, 160, 180, 220, 100]; // px, adjust as needed
+  const defaultColumnWidths = [220, 140, 200, 200, 220, 300, 120]; // wider columns
   const [columnWidths, setColumnWidths] = useState(defaultColumnWidths);
   const resizingCol = useRef(null);
   const startX = useRef(0);
@@ -438,15 +438,7 @@ export default function Home() {
     addLog(`Exported ${searchResults.length} items to CSV`);
   };
 
-  const handleMouseDown = (e, colIdx) => {
-    resizingCol.current = colIdx;
-    startX.current = e.clientX;
-    startWidth.current = columnWidths[colIdx];
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (resizingCol.current !== null) {
       const delta = e.clientX - startX.current;
       setColumnWidths((widths) => {
@@ -455,12 +447,20 @@ export default function Home() {
         return newWidths;
       });
     }
-  };
+  }, []);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     resizingCol.current = null;
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseMove]);
+
+  const handleMouseDown = (e, colIdx) => {
+    resizingCol.current = colIdx;
+    startX.current = e.clientX;
+    startWidth.current = columnWidths[colIdx];
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   return (
@@ -471,7 +471,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-7xl w-full mx-auto px-8">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">GBID Pinecone Uploader</h1>
           
@@ -756,7 +756,7 @@ RIGID CONDUIT:
                         <tr>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[0], minWidth: 60 }}
+                            style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800 }}
                           >
                             Name
                             <div
@@ -769,7 +769,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[1], minWidth: 60 }}
+                            style={{ width: columnWidths[1], minWidth: 60, maxWidth: 800 }}
                           >
                             GBID
                             <div
@@ -779,7 +779,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[2], minWidth: 60 }}
+                            style={{ width: columnWidths[2], minWidth: 60, maxWidth: 800 }}
                           >
                             GBID Template
                             <div
@@ -789,7 +789,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[3], minWidth: 60 }}
+                            style={{ width: columnWidths[3], minWidth: 60, maxWidth: 800 }}
                           >
                             Properties
                             <div
@@ -799,7 +799,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[4], minWidth: 60 }}
+                            style={{ width: columnWidths[4], minWidth: 60, maxWidth: 800 }}
                           >
                             Alternate Names
                             <div
@@ -809,7 +809,7 @@ RIGID CONDUIT:
                           </th>
                           <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            style={{ width: columnWidths[5], minWidth: 60 }}
+                            style={{ width: columnWidths[5], minWidth: 60, maxWidth: 800 }}
                           >
                             Special Notes
                             <div
@@ -823,7 +823,7 @@ RIGID CONDUIT:
                       <tbody className="bg-white divide-y divide-gray-200">
                         {searchResults.map((item, index) => (
                           <tr key={getRowId(item)} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ width: columnWidths[0], minWidth: 60 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800 }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.name}
@@ -835,7 +835,7 @@ RIGID CONDUIT:
                                 item.name
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[1], minWidth: 60 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[1], minWidth: 60, maxWidth: 800 }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.gbid}
@@ -847,7 +847,7 @@ RIGID CONDUIT:
                                 item.gbid
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[2], minWidth: 60 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[2], minWidth: 60, maxWidth: 800 }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.gbidTemplate}
@@ -859,7 +859,7 @@ RIGID CONDUIT:
                                 item.gbidTemplate
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[3], minWidth: 60 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[3], minWidth: 60, maxWidth: 800 }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.properties}
@@ -871,7 +871,7 @@ RIGID CONDUIT:
                                 item.properties
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[4], minWidth: 60 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[4], minWidth: 60, maxWidth: 800 }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.alternate_names}
@@ -883,7 +883,7 @@ RIGID CONDUIT:
                                 item.alternate_names
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[5], minWidth: 60 }}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" style={{ width: columnWidths[5], minWidth: 60, maxWidth: 800 }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
                                   value={editFormData.special_notes}
