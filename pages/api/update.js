@@ -24,10 +24,11 @@ export default async function handler(req, res) {
     if (!originalGbid || !data) {
       return res.status(400).json({ error: 'Original GBID and data are required' });
     }
-    const { name, gbid, properties, alternateNames, specialNotes } = data;
-    if (!name || !gbid) {
-      return res.status(400).json({ error: 'Name and GBID are required' });
+    const { name, gbid, gbidTemplate, properties, alternateNames, specialNotes } = data;
+    if (!name || (!gbid?.trim() && !gbidTemplate?.trim())) {
+      return res.status(400).json({ error: 'Name and at least one of GBID or GBID Template are required' });
     }
+    const id = gbid?.trim() || gbidTemplate?.trim();
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({ error: 'OpenAI API key not configured' });
     }
@@ -51,7 +52,8 @@ export default async function handler(req, res) {
     // Prepare metadata
     const metadata = {
       name: name,
-      gbid: gbid,
+      gbid: gbid || '',
+      gbidTemplate: gbidTemplate || '',
       properties: properties || '',
       alternate_names: alternateNames || '',
       special_notes: specialNotes || '',
@@ -62,7 +64,7 @@ export default async function handler(req, res) {
     const upsertBody = {
       vectors: [
         {
-          id: gbid,
+          id: id,
           values: vector,
           metadata: metadata,
         },
@@ -85,8 +87,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // If GBID changed, delete the old record
-    if (originalGbid !== gbid) {
+    // If id changed, delete the old record
+    if (originalGbid !== id) {
       const deleteUrl = `${pineconeHost}/vectors/delete`;
       const deleteBody = { ids: [originalGbid] };
       await fetch(deleteUrl, {
@@ -101,7 +103,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Successfully updated ${name} (${gbid})`,
+      message: `Successfully updated ${name} (${id})`,
     });
   } catch (error) {
     console.error('Update error:', error);
