@@ -759,6 +759,12 @@ RIGID CONDUIT:
                       <thead className="bg-gray-50">
                         <tr>
                           <th
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            style={{ width: 120, minWidth: 100, maxWidth: 160, position: 'sticky', left: 0, background: 'white', zIndex: 30, boxShadow: '2px 0 4px -2px #ccc' }}
+                          >
+                            Actions
+                          </th>
+                          <th
                             className="relative px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                           >
@@ -843,12 +849,59 @@ RIGID CONDUIT:
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             />
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {searchResults.map((item, index) => (
                           <tr key={getRowId(item)} className="hover:bg-gray-50">
+                            <td
+                              className="px-6 py-4 whitespace-nowrap text-sm font-medium"
+                              style={{ width: 120, minWidth: 100, maxWidth: 160, position: 'sticky', left: 0, background: 'white', zIndex: 30, boxShadow: '2px 0 4px -2px #ccc' }}
+                            >
+                              {editingRowId === getRowId(item) ? (
+                                <div className="flex space-x-2">
+                                  <button
+                                    onClick={() => handleEditItem(item, editFormData)}
+                                    className="text-green-600 hover:text-green-900"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    onClick={() => { setEditingRowId(null); setEditFormData({}); }}
+                                    className="text-gray-600 hover:text-gray-900"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex space-x-2">
+                                  <button
+                                    onClick={() => {
+                                      setEditingRowId(getRowId(item));
+                                      setEditFormData({
+                                        name: item.name || '',
+                                        gbid: item.gbid || '',
+                                        gbidTemplate: item.gbidTemplate || '',
+                                        properties: item.properties || '',
+                                        alternate_names: item.alternate_names || '',
+                                        special_notes: item.special_notes || '',
+                                        originalGbid: item.gbid || '',
+                                        originalId: getRowId(item),
+                                      });
+                                    }}
+                                    className="text-blue-600 hover:text-blue-900"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteItem(item)}
+                                    className="text-red-600 hover:text-red-900"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ width: columnWidths[0], minWidth: 60, maxWidth: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {editingRowId === getRowId(item) ? (
                                 <textarea
@@ -919,51 +972,6 @@ RIGID CONDUIT:
                                 />
                               ) : (
                                 item.special_notes
-                              )}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white z-10">
-                              {editingRowId === getRowId(item) ? (
-                                <div className="flex space-x-2">
-                                  <button
-                                    onClick={() => handleEditItem(item, editFormData)}
-                                    className="text-green-600 hover:text-green-900"
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    onClick={() => { setEditingRowId(null); setEditFormData({}); }}
-                                    className="text-gray-600 hover:text-gray-900"
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="flex space-x-2">
-                                  <button
-                                    onClick={() => {
-                                      setEditingRowId(getRowId(item));
-                                      setEditFormData({
-                                        name: item.name || '',
-                                        gbid: item.gbid || '',
-                                        gbidTemplate: item.gbidTemplate || '',
-                                        properties: item.properties || '',
-                                        alternate_names: item.alternate_names || '',
-                                        special_notes: item.special_notes || '',
-                                        originalGbid: item.gbid || '',
-                                        originalId: getRowId(item),
-                                      });
-                                    }}
-                                    className="text-blue-600 hover:text-blue-900"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteItem(item)}
-                                    className="text-red-600 hover:text-red-900"
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
                               )}
                             </td>
                           </tr>
