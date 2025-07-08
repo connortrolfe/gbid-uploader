@@ -308,7 +308,16 @@ export default function Home() {
       const result = await response.json();
       
       if (response.ok) {
-        setSearchResults(result.results || []);
+        const dedupeResults = (results) => {
+          const seen = new Set();
+          return results.filter(item => {
+            const id = item.gbid || item.gbidTemplate || item.name;
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+          });
+        };
+        setSearchResults(dedupeResults(result.results || []));
         addLog(`Found ${result.results?.length || 0} items`);
       } else {
         addLog(`Search error: ${result.error}`);
