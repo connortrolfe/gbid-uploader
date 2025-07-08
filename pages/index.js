@@ -413,9 +413,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gbid: item.gbid,
-          gbidTemplate: item.gbidTemplate,
-          name: item.name,
+          vectorId: item.vectorId,
         }),
       });
 
@@ -423,8 +421,8 @@ export default function Home() {
       
       if (response.ok) {
         addLog(`Success: ${item.name} (${item.gbid}) deleted`);
-        // Remove from search results
-        setSearchResults(prev => prev.filter(i => i.gbid !== item.gbid));
+        // Remove from search results by vectorId
+        setSearchResults(prev => prev.filter(i => i.vectorId !== item.vectorId));
       } else {
         addLog(`Error deleting ${item.name}: ${result.error}`);
       }
