@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Head from 'next/head';
 import Papa from 'papaparse';
 
@@ -22,9 +22,31 @@ export default function Home() {
   const [editFormData, setEditFormData] = useState({});
   const defaultColumnWidths = [220, 140, 200, 200, 220, 300, 120]; // wider columns
   const [columnWidths, setColumnWidths] = useState(defaultColumnWidths);
-  const resizingCol = useRef(null);
+  const [resizing, setResizing] = useState({ colIdx: null, startX: 0, startWidth: 0 });
   const startX = useRef(0);
   const startWidth = useRef(0);
+
+  useEffect(() => {
+    if (resizing.colIdx !== null) {
+      const handleMouseMove = (e) => {
+        const delta = e.clientX - resizing.startX;
+        setColumnWidths((widths) => {
+          const newWidths = [...widths];
+          newWidths[resizing.colIdx] = Math.max(60, resizing.startWidth + delta);
+          return newWidths;
+        });
+      };
+      const handleMouseUp = () => {
+        setResizing({ colIdx: null, startX: 0, startWidth: 0 });
+      };
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [resizing]);
 
   const addProperty = () => {
     setProperties([...properties, '']);
@@ -438,29 +460,8 @@ export default function Home() {
     addLog(`Exported ${searchResults.length} items to CSV`);
   };
 
-  const handleMouseMove = useCallback((e) => {
-    if (resizingCol.current !== null) {
-      const delta = e.clientX - startX.current;
-      setColumnWidths((widths) => {
-        const newWidths = [...widths];
-        newWidths[resizingCol.current] = Math.max(60, startWidth.current + delta);
-        return newWidths;
-      });
-    }
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    resizingCol.current = null;
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', handleMouseUp);
-  }, [handleMouseMove]);
-
   const handleMouseDown = (e, colIdx) => {
-    resizingCol.current = colIdx;
-    startX.current = e.clientX;
-    startWidth.current = columnWidths[colIdx];
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    setResizing({ colIdx, startX: e.clientX, startWidth: columnWidths[colIdx] });
   };
 
   return (
@@ -761,8 +762,7 @@ RIGID CONDUIT:
                             Name
                             <div
                               style={{
-                                position: 'absolute', right: 0, top: 0, height: '100%', width: '6px', cursor: 'col-resize', zIndex: 10,
-                                userSelect: 'none',
+                                position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all',
                               }}
                               onMouseDown={e => handleMouseDown(e, 0)}
                             />
@@ -773,7 +773,7 @@ RIGID CONDUIT:
                           >
                             GBID
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '6px', cursor: 'col-resize', zIndex: 10, userSelect: 'none' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
                               onMouseDown={e => handleMouseDown(e, 1)}
                             />
                           </th>
@@ -783,7 +783,7 @@ RIGID CONDUIT:
                           >
                             GBID Template
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '6px', cursor: 'col-resize', zIndex: 10, userSelect: 'none' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
                               onMouseDown={e => handleMouseDown(e, 2)}
                             />
                           </th>
@@ -793,7 +793,7 @@ RIGID CONDUIT:
                           >
                             Properties
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '6px', cursor: 'col-resize', zIndex: 10, userSelect: 'none' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
                               onMouseDown={e => handleMouseDown(e, 3)}
                             />
                           </th>
@@ -803,7 +803,7 @@ RIGID CONDUIT:
                           >
                             Alternate Names
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '6px', cursor: 'col-resize', zIndex: 10, userSelect: 'none' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
                               onMouseDown={e => handleMouseDown(e, 4)}
                             />
                           </th>
@@ -813,7 +813,7 @@ RIGID CONDUIT:
                           >
                             Special Notes
                             <div
-                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '6px', cursor: 'col-resize', zIndex: 10, userSelect: 'none' }}
+                              style={{ position: 'absolute', right: 0, top: 0, height: '100%', width: '12px', cursor: 'col-resize', zIndex: 50, userSelect: 'none', pointerEvents: 'all' }}
                               onMouseDown={e => handleMouseDown(e, 5)}
                             />
                           </th>
