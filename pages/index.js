@@ -6,6 +6,7 @@ export default function Home() {
   const [formData, setFormData] = useState({
     name: '',
     gbid: '',
+    gbidTemplate: '',
     alternateNames: '',
     specialNotes: ''
   });
@@ -62,6 +63,7 @@ export default function Home() {
           data: {
             name: formData.name,
             gbid: formData.gbid,
+            gbidTemplate: formData.gbidTemplate,
             properties: propertiesString,
             alternateNames: formData.alternateNames,
             specialNotes: formData.specialNotes
@@ -74,7 +76,7 @@ export default function Home() {
       if (response.ok) {
         addLog(`Success: ${formData.name} (${formData.gbid}) uploaded`);
         // Clear form
-        setFormData({ name: '', gbid: '', alternateNames: '', specialNotes: '' });
+        setFormData({ name: '', gbid: '', gbidTemplate: '', alternateNames: '', specialNotes: '' });
         setProperties(['']);
       } else {
         addLog(`Error: ${result.error}`);
@@ -148,6 +150,7 @@ export default function Home() {
                 data: {
                   name,
                   gbid,
+                  gbidTemplate: row['GBID Template']?.trim() || '',
                   properties: row.Properties?.trim() || '',
                   alternateNames: row['Alternate Names']?.trim() || '',
                   specialNotes: row['Special Notes']?.trim() || ''
@@ -387,10 +390,11 @@ export default function Home() {
     }
 
     const csvContent = [
-      ['Name', 'GBID', 'Properties', 'Alternate Names', 'Special Notes'],
+      ['Name', 'GBID', 'GBID Template', 'Properties', 'Alternate Names', 'Special Notes'],
       ...searchResults.map(item => [
         item.name,
         item.gbid,
+        item.gbidTemplate,
         item.properties,
         item.alternate_names,
         item.special_notes
@@ -498,6 +502,19 @@ export default function Home() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  GBID Template
+                </label>
+                <input
+                  type="text"
+                  value={formData.gbidTemplate}
+                  onChange={(e) => setFormData({...formData, gbidTemplate: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., =ASE(SIZE)X(SIZE)X(SIZE)*"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Alternate Names
                 </label>
                 <input
@@ -594,7 +611,7 @@ export default function Home() {
                       {isUploading ? 'Processing...' : 'Click to upload CSV file'}
                     </p>
                     <p className="mt-1 text-sm text-gray-500">
-                      CSV should have columns: Name, GBID, Properties, Alternate Names, Special Notes
+                      CSV should have columns: Name, GBID, GBID Template, Properties, Alternate Names, Special Notes
                     </p>
                   </div>
                 </label>
@@ -688,10 +705,11 @@ RIGID CONDUIT:
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GBID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GBID Template</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Properties</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alternate Names</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Special Notes</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 z-10">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
@@ -725,6 +743,21 @@ RIGID CONDUIT:
                                 />
                               ) : (
                                 item.gbid
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {editingItem?.gbid === item.gbid ? (
+                                <input
+                                  type="text"
+                                  defaultValue={item.gbidTemplate}
+                                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                                  onBlur={(e) => {
+                                    const updatedData = { ...editingItem, gbidTemplate: e.target.value };
+                                    setEditingItem(updatedData);
+                                  }}
+                                />
+                              ) : (
+                                item.gbidTemplate
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -772,7 +805,7 @@ RIGID CONDUIT:
                                 item.special_notes
                               )}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white z-10">
                               {editingItem?.gbid === item.gbid ? (
                                 <div className="flex space-x-2">
                                   <button
