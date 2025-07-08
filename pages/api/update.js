@@ -60,6 +60,7 @@ export default async function handler(req, res) {
     };
 
     // Upsert to Pinecone via HTTP
+    console.log('Upserting vector with id:', id);
     const upsertUrl = `${pineconeHost}/vectors/upsert`;
     const upsertBody = {
       vectors: [
@@ -89,6 +90,7 @@ export default async function handler(req, res) {
 
     // If id changed, delete the old record
     if (originalGbid !== id) {
+      console.log('Deleting old vector with id:', originalGbid);
       const deleteUrl = `${pineconeHost}/vectors/delete`;
       const deleteBody = { ids: [originalGbid] };
       await fetch(deleteUrl, {
@@ -104,6 +106,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       message: `Successfully updated ${name} (${id})`,
+      id: id,
     });
   } catch (error) {
     console.error('Update error:', error);
