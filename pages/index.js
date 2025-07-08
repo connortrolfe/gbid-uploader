@@ -750,10 +750,10 @@ RIGID CONDUIT:
 
               {/* Results Table */}
               {searchResults.length > 0 && (
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="overflow-x-auto">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
+                  <div>
                     <table
-                      className="min-w-full divide-y divide-gray-200"
+                      className="min-w-[1200px] min-w-full divide-y divide-gray-200"
                       style={{ tableLayout: 'fixed', width: '100%' }}
                     >
                       <thead className="bg-gray-50">
