@@ -82,6 +82,9 @@ export default async function handler(req, res) {
       special_notes: specialNotes || '',
     };
 
+    console.log('Received data:', data);
+    console.log('Metadata to store:', metadata);
+
     // Upsert to Pinecone via HTTP
     const upsertUrl = `${pineconeHost}/vectors/upsert`;
     const upsertBody = {
