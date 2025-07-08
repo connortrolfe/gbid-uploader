@@ -59,9 +59,9 @@ export default async function handler(req, res) {
       special_notes: specialNotes || '',
     };
 
-    // Upsert to Pinecone via HTTP
-    console.log('Upserting vector with original id:', originalGbid);
-    const upsertUrl = `${pineconeHost}/vectors/upsert`;
+    // Debug logging before upsert
+    console.log('Update request:', { originalGbid, name, gbid, gbidTemplate });
+    console.log('Upsert vector ID:', originalGbid);
     const upsertBody = {
       vectors: [
         {
@@ -71,6 +71,11 @@ export default async function handler(req, res) {
         },
       ],
     };
+    console.log('Upsert body:', JSON.stringify(upsertBody));
+    console.log('Vector length:', vector.length);
+
+    // Upsert to Pinecone via HTTP
+    const upsertUrl = `${pineconeHost}/vectors/upsert`;
     const upsertResponse = await fetch(upsertUrl, {
       method: 'POST',
       headers: {
