@@ -18,7 +18,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [editFormData, setEditFormData] = useState({});
 
   const addProperty = () => {
     setProperties([...properties, '']);
@@ -322,7 +323,11 @@ export default function Home() {
   };
 
   const handleEditItem = async (item, updatedData) => {
-    console.log('Updating item with data:', updatedData); // Debug log
+    const backendData = {
+      ...updatedData,
+      alternateNames: updatedData.alternate_names,
+      specialNotes: updatedData.special_notes,
+    };
     addLog(`Updating: ${item.name} (${item.gbid})...`);
     try {
       const response = await fetch('/api/update', {
@@ -332,13 +337,14 @@ export default function Home() {
         },
         body: JSON.stringify({
           originalGbid: item.gbid,
-          data: updatedData // should include gbidTemplate
+          data: backendData
         }),
       });
       const result = await response.json();
       if (response.ok) {
-        addLog(`Success: ${updatedData.name} (${updatedData.gbid}) updated`);
-        setEditingItem(null);
+        addLog(`Success: ${backendData.name} (${backendData.gbid}) updated`);
+        setEditingRowId(null);
+        setEditFormData({});
         // Refresh search results
         if (searchQuery.trim()) {
           handleSearch();
@@ -714,108 +720,90 @@ RIGID CONDUIT:
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {searchResults.map((item, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
+                          <tr key={item.gbid || item.gbidTemplate || item.name} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <input
                                   type="text"
-                                  defaultValue={item.name}
+                                  value={editFormData.name}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
-                                  onBlur={(e) => {
-                                    const updatedData = { ...editingItem, name: e.target.value };
-                                    setEditingItem(updatedData);
-                                  }}
+                                  onChange={e => setEditFormData({ ...editFormData, name: e.target.value })}
                                 />
                               ) : (
                                 item.name
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <input
                                   type="text"
-                                  defaultValue={item.gbid}
+                                  value={editFormData.gbid}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
-                                  onBlur={(e) => {
-                                    const updatedData = { ...editingItem, gbid: e.target.value };
-                                    setEditingItem(updatedData);
-                                  }}
+                                  onChange={e => setEditFormData({ ...editFormData, gbid: e.target.value })}
                                 />
                               ) : (
                                 item.gbid
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <input
                                   type="text"
-                                  defaultValue={editingItem.gbidTemplate ?? item.gbidTemplate}
+                                  value={editFormData.gbidTemplate}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
-                                  onBlur={(e) => {
-                                    const updatedData = { ...editingItem, gbidTemplate: e.target.value };
-                                    setEditingItem(updatedData);
-                                  }}
+                                  onChange={e => setEditFormData({ ...editFormData, gbidTemplate: e.target.value })}
                                 />
                               ) : (
                                 item.gbidTemplate
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <input
                                   type="text"
-                                  defaultValue={item.properties}
+                                  value={editFormData.properties}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
-                                  onBlur={(e) => {
-                                    const updatedData = { ...editingItem, properties: e.target.value };
-                                    setEditingItem(updatedData);
-                                  }}
+                                  onChange={e => setEditFormData({ ...editFormData, properties: e.target.value })}
                                 />
                               ) : (
                                 item.properties
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <input
                                   type="text"
-                                  defaultValue={item.alternate_names}
+                                  value={editFormData.alternate_names}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
-                                  onBlur={(e) => {
-                                    const updatedData = { ...editingItem, alternate_names: e.target.value };
-                                    setEditingItem(updatedData);
-                                  }}
+                                  onChange={e => setEditFormData({ ...editFormData, alternate_names: e.target.value })}
                                 />
                               ) : (
                                 item.alternate_names
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <input
                                   type="text"
-                                  defaultValue={item.special_notes}
+                                  value={editFormData.special_notes}
                                   className="w-full px-2 py-1 border border-gray-300 rounded"
-                                  onBlur={(e) => {
-                                    const updatedData = { ...editingItem, special_notes: e.target.value };
-                                    setEditingItem(updatedData);
-                                  }}
+                                  onChange={e => setEditFormData({ ...editFormData, special_notes: e.target.value })}
                                 />
                               ) : (
                                 item.special_notes
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium sticky right-0 bg-white z-10">
-                              {editingItem?.gbid === item.gbid ? (
+                              {editingRowId === (item.gbid || item.gbidTemplate) ? (
                                 <div className="flex space-x-2">
                                   <button
-                                    onClick={() => handleEditItem(item, editingItem)}
+                                    onClick={() => handleEditItem(item, editFormData)}
                                     className="text-green-600 hover:text-green-900"
                                   >
                                     Save
                                   </button>
                                   <button
-                                    onClick={() => setEditingItem(null)}
+                                    onClick={() => { setEditingRowId(null); setEditFormData({}); }}
                                     className="text-gray-600 hover:text-gray-900"
                                   >
                                     Cancel
@@ -824,7 +812,17 @@ RIGID CONDUIT:
                               ) : (
                                 <div className="flex space-x-2">
                                   <button
-                                    onClick={() => setEditingItem(item)}
+                                    onClick={() => {
+                                      setEditingRowId(item.gbid || item.gbidTemplate);
+                                      setEditFormData({
+                                        name: item.name || '',
+                                        gbid: item.gbid || '',
+                                        gbidTemplate: item.gbidTemplate || '',
+                                        properties: item.properties || '',
+                                        alternate_names: item.alternate_names || '',
+                                        special_notes: item.special_notes || '',
+                                      });
+                                    }}
                                     className="text-blue-600 hover:text-blue-900"
                                   >
                                     Edit
