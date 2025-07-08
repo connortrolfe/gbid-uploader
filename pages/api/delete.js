@@ -19,15 +19,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { gbid } = req.body;
-
-    if (!gbid) {
-      return res.status(400).json({ error: 'GBID is required' });
+    const { gbid, gbidTemplate, name } = req.body;
+    let id = gbid;
+    if (!id && gbidTemplate) id = gbidTemplate;
+    if (!id && name) id = name.replace(/\s+/g, '_').toLowerCase();
+    if (!id) {
+      return res.status(400).json({ error: 'At least one of GBID, GBID Template, or Name is required' });
     }
-
     // Delete from Pinecone via HTTP
     const deleteUrl = `${pineconeHost}/vectors/delete`;
-    const deleteBody = { ids: [gbid] };
+    const deleteBody = { ids: [id] };
     const deleteResponse = await fetch(deleteUrl, {
       method: 'POST',
       headers: {
@@ -36,7 +37,6 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify(deleteBody),
     });
-
     if (!deleteResponse.ok) {
       const errorText = await deleteResponse.text();
       return res.status(500).json({
@@ -44,10 +44,9 @@ export default async function handler(req, res) {
         details: errorText,
       });
     }
-
     return res.status(200).json({
       success: true,
-      message: `Successfully deleted item with GBID: ${gbid}`,
+      message: `Successfully deleted item with ID: ${id}`,
     });
   } catch (error) {
     console.error('Delete error:', error);
